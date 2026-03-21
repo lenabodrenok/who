@@ -9,16 +9,16 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --border: rgba(255,255,255,0.07);
-    --text-primary: #f5f5f5;
-    --text-secondary: rgba(245,245,245,0.45);
-    --text-hint: rgba(245,245,245,0.28);
-    --green: #34c759;
-    --red: #ff453a;
-    --accent: rgba(255,255,255,0.06);
-    --divider: rgba(255,255,255,0.1);
+    --bg: #EEEDED;
+    --surface: #E8E7E7;
+    --border: rgba(30,26,26,0.08);
+    --text-primary: #1E1A1A;
+    --text-secondary: rgba(30,26,26,0.55);
+    --text-hint: rgba(30,26,26,0.32);
+    --green: #2A7A45;
+    --red: #C0392B;
+    --accent: rgba(30,26,26,0.04);
+    --divider: rgba(30,26,26,0.12);
   }
 
   html, body {
@@ -38,6 +38,12 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  #app.ready {
+    opacity: 1;
   }
 
   /* HEADER */
@@ -68,7 +74,7 @@
   #lang-switcher {
     display: flex;
     gap: 2px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(30,26,26,0.07);
     border-radius: 8px;
     padding: 3px;
   }
@@ -89,7 +95,7 @@
   }
 
   .lang-btn.active {
-    background: rgba(255,255,255,0.1);
+    background: rgba(30,26,26,0.1);
     color: var(--text-secondary);
   }
 
@@ -187,7 +193,7 @@
 
   .person-name {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(22px, 6vw, 32px);
+    font-size: clamp(28px, 7.5vw, 42px);
     font-weight: 500;
     color: var(--text-primary);
     line-height: 1.2;
@@ -195,27 +201,25 @@
   }
 
   .person-hint {
-    font-size: 13px;
-    font-weight: 300;
+    font-size: 15px;
+    font-weight: 400;
     color: var(--text-hint);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
   }
 
   .person-year {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 9vw, 48px);
+    font-size: clamp(40px, 11vw, 60px);
     font-weight: 400;
     opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.4s ease, transform 0.4s ease, color 0.3s ease;
+    transition: opacity 0.4s ease, color 0.3s ease;
     margin-top: 6px;
     letter-spacing: -0.02em;
   }
 
   .person-year.visible {
     opacity: 1;
-    transform: translateY(0);
   }
 
   .person-year.year-correct {
@@ -258,7 +262,7 @@
     justify-content: center;
     align-items: center;
     padding: 40px 32px;
-    background: rgba(10, 10, 10, 0.96);
+    background: rgba(238, 237, 237, 0.96);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     opacity: 0;
@@ -273,7 +277,7 @@
 
   #fact-name {
     font-family: 'Playfair Display', serif;
-    font-size: 13px;
+    font-size: 17px;
     font-weight: 400;
     color: var(--text-hint);
     letter-spacing: 0.08em;
@@ -284,7 +288,7 @@
 
   #fact-text {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(16px, 4.5vw, 22px);
+    font-size: clamp(20px, 5.5vw, 28px);
     font-weight: 400;
     color: var(--text-primary);
     line-height: 1.6;
@@ -303,7 +307,7 @@
 
   #fact-tap-hint {
     margin-top: 36px;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--text-hint);
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -314,7 +318,106 @@
     50% { opacity: 0.8; transform: scale(1.4); }
   }
 
-  /* SPLASH SCREEN */
+  /* LANGUAGE SELECT SCREEN */
+  #lang-select {
+    position: fixed;
+    inset: 0;
+    z-index: 190;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+
+  #lang-select.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  #lang-select.hide {
+    animation: splashOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+    pointer-events: none;
+  }
+
+  #lang-select-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text-hint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .lang-select-btn {
+    background: none;
+    border: 1px solid var(--divider);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    width: 200px;
+    padding: 18px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 8px 0;
+    transition: background 0.2s, border-color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .lang-select-btn:active {
+    background: var(--surface);
+  }
+
+  /* SCORE SCREEN */
+  #score-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 110;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(238, 237, 237, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+
+  #score-overlay.visible {
+    opacity: 1;
+  }
+
+  #score-overlay.hide {
+    animation: splashOut 0.4s cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+
+  #score-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-hint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  #score-number {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(64px, 18vw, 96px);
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
   #splash {
     position: fixed;
     inset: 0;
@@ -331,13 +434,12 @@
 
   #splash-title {
     font-family: 'Playfair Display', serif;
-    font-size: clamp(32px, 9vw, 52px);
+    font-size: clamp(42px, 11vw, 64px);
     font-weight: 400;
     color: var(--text-primary);
     letter-spacing: -0.01em;
     opacity: 0;
-    transform: translateY(16px);
-    animation: splashTitleIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+    animation: splashTitleIn 1s ease 0.4s forwards;
   }
 
   #splash-line {
@@ -365,7 +467,7 @@
   }
 
   @keyframes splashTitleIn {
-    to { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; }
   }
 
   @keyframes splashLineIn {
@@ -377,10 +479,10 @@
   }
 
   @keyframes splashOut {
-    to { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 0; }
   }
   .card-enter {
-    animation: cardEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: cardEnter 0.6s ease both;
   }
 
   .card.top.card-enter {
@@ -388,31 +490,25 @@
   }
 
   .card.bottom.card-enter {
-    animation-delay: 0.06s;
+    animation-delay: 0s;
   }
 
   @keyframes cardEnter {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 
-  /* SWIPE OUT */
   .card-exit-up {
-    animation: cardExitUp 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+    animation: cardFadeOut 0.35s ease both;
   }
 
   .card-exit-down {
-    animation: cardExitDown 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+    animation: cardFadeOut 0.35s ease both;
   }
 
-  @keyframes cardExitUp {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-16px); }
-  }
-
-  @keyframes cardExitDown {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(16px); }
+  @keyframes cardFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
   }
 
   /* BOTTOM HINT */
@@ -423,7 +519,7 @@
   }
 
   #bottom-hint span {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--text-hint);
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -440,6 +536,12 @@
   <div id="splash-title">Who's Older?</div>
   <div id="splash-line"></div>
   <div id="splash-sub">Tap to continue</div>
+</div>
+
+<div id="lang-select">
+  <div id="lang-select-title">Choose language</div>
+  <button class="lang-select-btn" onclick="chooseLang('en')">English</button>
+  <button class="lang-select-btn" onclick="chooseLang('ru')">Русский</button>
 </div>
 
 <div id="app">
@@ -481,9 +583,14 @@
       <div id="fact-dot"></div>
       <div id="fact-tap-hint">Tap to continue</div>
     </div>
+
+    <div id="score-overlay">
+      <div id="score-label">Your streak</div>
+      <div id="score-number">0</div>
+    </div>
   </div>
 
-  <div id="bottom-hint"><span>Tap the older person</span></div>
+  <div id="bottom-hint"><span>Tap the one born first</span></div>
 </div>
 
 <script>
@@ -528,8 +635,8 @@ function pairKey(a, b) {
 let lang = 'en';
 
 const UI = {
-  en: { title: "Who's Older?", hint: "Tap the one born first", tap: "Tap to continue" },
-  ru: { title: "Кто родился раньше?", hint: "Нажми на того, кто родился раньше", tap: "Нажми, чтобы продолжить" }
+  en: { title: "Who's Older?", hint: "Tap the one born first", tap: "Tap to continue", score: "Your streak", langTitle: "Choose language" },
+  ru: { title: "Кто родился раньше?", hint: "Нажми на того, кто родился раньше", tap: "Нажми, чтобы продолжить", score: "Ваша серия", langTitle: "Выберите язык" }
 };
 
 function setLang(l) {
@@ -538,14 +645,24 @@ function setLang(l) {
   document.getElementById('title').textContent = UI[l].title;
   document.getElementById('bottom-hint').querySelector('span').textContent = UI[l].hint;
   document.getElementById('fact-tap-hint').textContent = UI[l].tap;
+  document.getElementById('score-label').textContent = UI[l].score;
+  const langSelectEl = document.getElementById('lang-select');
+  if (langSelectEl && !langSelectEl.classList.contains('hide')) {
+    const titleEl = langSelectEl.querySelector('#lang-select-title');
+    if (titleEl) titleEl.textContent = UI[l].langTitle;
+  }
   const splashEl = document.getElementById('splash');
   if (splashEl) {
     splashEl.querySelector('#splash-title').textContent = UI[l].title;
     splashEl.querySelector('#splash-sub').textContent = UI[l].tap;
   }
+  // re-render fact overlay if visible
+  if (factOverlay.classList.contains('visible') && currentFactPerson) {
+    factName.textContent = getName(currentFactPerson).toUpperCase();
+    factText.textContent = getFact(currentFactPerson);
+  }
   if (currentPair) {
     renderPair(currentPair, false);
-    // re-show years if they were visible
     if (yearTop.classList.contains('visible')) {
       yearTop.style.visibility = '';
       yearBot.style.visibility = '';
@@ -684,11 +801,10 @@ const factOverlay = document.getElementById('fact-overlay');
 const factName   = document.getElementById('fact-name');
 const factText   = document.getElementById('fact-text');
 
-function renderPair(pair, animate) {
+function renderPair(pair, animate, silent = false) {
   const [a, b] = pair;
   currentPair = pair;
 
-  // Reset years to invisible BEFORE setting content
   yearTop.className = 'person-year';
   yearBot.className = 'person-year';
   yearTop.textContent = '';
@@ -702,17 +818,17 @@ function renderPair(pair, animate) {
   cardTop.className = 'card top';
   cardBottom.className = 'card bottom';
 
-  // Pre-fill years as invisible so layout is stable from the start
   yearTop.style.visibility = 'hidden';
   yearBot.style.visibility = 'hidden';
   yearTop.textContent = formatYear(a.b);
   yearBot.textContent = formatYear(b.b);
 
-  // Reveal after animation completes
-  setTimeout(() => {
-    yearTop.style.visibility = '';
-    yearBot.style.visibility = '';
-  }, 550);
+  if (!silent) {
+    setTimeout(() => {
+      yearTop.style.visibility = '';
+      yearBot.style.visibility = '';
+    }, 550);
+  }
 
   if (animate) {
     cardTop.classList.add('card-enter');
@@ -737,7 +853,10 @@ function updateCounter(reset) {
   }
 }
 
+let savedStreak = 0;
+
 function showFact(person) {
+  currentFactPerson = person;
   factName.textContent = getName(person).toUpperCase();
   factText.textContent = getFact(person);
   factOverlay.classList.add('visible');
@@ -748,8 +867,68 @@ factOverlay.addEventListener('click', () => {
   if (!factOverlay.classList.contains('visible')) return;
   factOverlay.classList.remove('visible');
   document.getElementById('bottom-hint').style.visibility = '';
-  setTimeout(() => loadNextPair(), 400);
+  // show score screen before loading next pair
+  showScore();
 });
+
+function showScore() {
+  const scoreOverlay = document.getElementById('score-overlay');
+  const scoreNumber = document.getElementById('score-number');
+
+  // Clear and hide old cards immediately
+  cardTop.className = 'card top';
+  cardBottom.className = 'card bottom';
+  yearTop.className = 'person-year';
+  yearBot.className = 'person-year';
+  cardTop.style.opacity = '0';
+  cardBottom.style.opacity = '0';
+
+  scoreNumber.textContent = savedStreak;
+  scoreOverlay.classList.remove('hide');
+  scoreOverlay.classList.add('visible');
+
+  // countdown animation — streak resets here, not before
+  let current = savedStreak;
+  streak = savedStreak; // keep visible until countdown starts
+  if (current > 0) {
+    const stepMs = Math.min(80, 800 / savedStreak);
+    const interval = setInterval(() => {
+      current--;
+      streak = current;
+      scoreNumber.textContent = current;
+      counterEl.textContent = current;
+      if (current <= 0) {
+        clearInterval(interval);
+        streak = 0;
+        counterEl.textContent = 0;
+      }
+    }, stepMs);
+  } else {
+    streak = 0;
+    counterEl.textContent = 0;
+  }
+
+  const nextP = nextPair();
+  renderPair(nextP, false, true); // silent — no year reveal yet
+
+  setTimeout(() => {
+    scoreOverlay.classList.add('hide');
+    setTimeout(() => {
+      scoreOverlay.classList.remove('visible', 'hide');
+      // reveal years and restore cards now that overlay is gone
+      cardTop.style.opacity = '';
+      cardBottom.style.opacity = '';
+      yearTop.style.visibility = '';
+      yearBot.style.visibility = '';
+      cardTop.classList.add('card-enter');
+      cardBottom.classList.add('card-enter');
+      setTimeout(() => {
+        cardTop.classList.remove('card-enter');
+        cardBottom.classList.remove('card-enter');
+      }, 600);
+    }, 400);
+  }, 2200);
+}
 
 function handleTap(chosen) {
   if (locked) return;
@@ -787,11 +966,9 @@ function handleTap(chosen) {
     chosenYear.classList.add('year-wrong');
     otherYear.classList.add('year-correct');
 
-    streak = 0;
+    savedStreak = streak;
     usedPairs.add(pairKey(a, b));
     addRecent(a, b);
-
-    updateCounter(true);
 
     setTimeout(() => {
       showFact(chosen);
@@ -810,20 +987,34 @@ function loadNextPair() {
 
 // Init
 buildDeck();
+renderPair(nextPair(), false);
 
 const splash = document.getElementById('splash');
 const splashSub = document.getElementById('splash-sub');
+const langSelect = document.getElementById('lang-select');
 
+// Splash → lang select
 splash.addEventListener('click', () => {
-  if (!splashSub.style.opacity && getComputedStyle(splashSub).opacity < 0.5) return;
+  if (getComputedStyle(splashSub).opacity < 0.5) return;
   splash.classList.add('hide');
-  setTimeout(() => splash.remove(), 500);
+  setTimeout(() => {
+    splash.remove();
+    langSelect.classList.add('visible');
+  }, 500);
 });
+
+// Lang select → game
+function chooseLang(l) {
+  langSelect.classList.add('hide');
+  setLang(l);
+  setTimeout(() => {
+    langSelect.remove();
+    document.getElementById('app').classList.add('ready');
+  }, 400);
+}
 
 cardTop.addEventListener('click', () => handleTap(currentPair[0]));
 cardBottom.addEventListener('click', () => handleTap(currentPair[1]));
-
-renderPair(nextPair(), false);
 </script>
 </body>
 </html>
