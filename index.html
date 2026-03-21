@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Who's Older?</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -58,7 +58,7 @@
   }
 
   #title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: 15px;
     font-weight: 400;
     color: var(--text-secondary);
@@ -192,7 +192,7 @@
   }
 
   .person-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: clamp(32px, 8.5vw, 48px);
     font-weight: 500;
     color: var(--text-primary);
@@ -209,7 +209,7 @@
   }
 
   .person-year {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: clamp(40px, 11vw, 60px);
     font-weight: 400;
     opacity: 0;
@@ -276,7 +276,7 @@
   }
 
   #fact-name {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: 20px;
     font-weight: 500;
     color: var(--text-hint);
@@ -287,7 +287,7 @@
   }
 
   #fact-text {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: clamp(22px, 6vw, 30px);
     font-weight: 400;
     color: var(--text-primary);
@@ -345,7 +345,7 @@
   }
 
   #lang-select-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: 15px;
     font-weight: 400;
     color: var(--text-hint);
@@ -411,7 +411,7 @@
   }
 
   #score-number {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: clamp(64px, 18vw, 96px);
     font-weight: 400;
     color: var(--text-primary);
@@ -433,7 +433,7 @@
   }
 
   #splash-title {
-    font-family: 'Playfair Display', serif;
+    font-family: 'PT Serif', serif;
     font-size: clamp(52px, 13vw, 76px);
     font-weight: 500;
     color: var(--text-primary);
@@ -546,7 +546,7 @@
 
 <div id="app">
   <div id="header">
-    <span id="title">Who's Older?</span>
+    <div></div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div id="lang-switcher">
         <button class="lang-btn active" onclick="setLang('en')">EN</button>
@@ -886,6 +886,7 @@ function showScore() {
   scoreNumber.textContent = savedStreak;
   scoreOverlay.classList.remove('hide');
   scoreOverlay.classList.add('visible');
+  document.getElementById('bottom-hint').style.visibility = 'hidden';
 
   // countdown animation — streak resets here, not before
   let current = savedStreak;
@@ -916,6 +917,7 @@ function showScore() {
     setTimeout(() => {
       scoreOverlay.classList.remove('visible', 'hide');
       // reveal years and restore cards now that overlay is gone
+      document.getElementById('bottom-hint').style.visibility = '';
       cardTop.style.opacity = '';
       cardBottom.style.opacity = '';
       yearTop.style.visibility = '';
