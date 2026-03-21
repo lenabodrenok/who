@@ -642,7 +642,8 @@ const UI = {
 function setLang(l) {
   lang = l;
   document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
-  document.getElementById('title').textContent = UI[l].title;
+  const titleEl = document.getElementById('title');
+  if (titleEl) titleEl.textContent = UI[l].title;
   document.getElementById('bottom-hint').querySelector('span').textContent = UI[l].hint;
   document.getElementById('fact-tap-hint').textContent = UI[l].tap;
   document.getElementById('score-label').textContent = UI[l].score;
