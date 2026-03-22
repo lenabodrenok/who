@@ -173,14 +173,8 @@
     border-bottom: 1px solid var(--divider);
   }
 
-  .card.correct {
-    background: rgba(42, 122, 69, 0.08) !important;
-    transition: background 0.3s ease;
-  }
-
-  .card.wrong {
-    background: rgba(192, 57, 43, 0.08) !important;
-    transition: background 0.3s ease;
+  .card.correct, .card.wrong {
+    background: transparent !important;
   }
 
   .card.dimmed {
@@ -536,25 +530,6 @@
     text-transform: uppercase;
   }
 
-  body.top-correct {
-    background: rgba(42, 122, 69, 0.08);
-  }
-
-  body.top-wrong {
-    background: rgba(192, 57, 43, 0.08);
-  }
-
-  body.top-dimmed {
-    background: var(--bg);
-  }
-    background: rgba(42, 122, 69, 0.08);
-    transition: background 0.3s ease;
-  }
-
-  #header.wrong, #bottom-hint.wrong {
-    background: rgba(192, 57, 43, 0.08);
-    transition: background 0.3s ease;
-  }
   .card.disabled {
     pointer-events: none;
   }
@@ -917,10 +892,7 @@ function showFact(person) {
   factName.textContent = getName(person).toUpperCase();
   factText.textContent = getFact(person);
   factOverlay.classList.add('visible');
-  document.getElementById('bottom-hint').style.visibility = 'hidden';
-  document.getElementById('header').className = '';
-  document.getElementById('bottom-hint').className = '';
-  document.body.className = '';
+  clearAppColor();
   document.getElementById('bottom-hint').style.visibility = 'hidden';
 }
 
@@ -941,9 +913,7 @@ function showScore() {
   cardBottom.className = 'card bottom';
   yearTop.className = 'person-year';
   yearBot.className = 'person-year';
-  document.getElementById('header').className = '';
-  document.getElementById('bottom-hint').className = '';
-  document.body.className = '';
+  clearAppColor();
   cardTop.style.opacity = '0';
   cardBottom.style.opacity = '0';
 
@@ -1019,11 +989,13 @@ function handleTap(chosen) {
     otherCard.classList.add('dimmed');
     chosenYear.classList.add('year-correct');
     otherYear.classList.add('year-dimmed');
-    // header matches top card, bottom-hint matches bottom card
-    const topIsChosen = chosen === a;
-    document.getElementById('header').classList.add(topIsChosen ? 'correct' : 'dimmed');
-    document.getElementById('bottom-hint').classList.add(topIsChosen ? 'dimmed' : 'correct');
-    document.body.classList.add(topIsChosen ? 'top-correct' : 'top-dimmed');
+    const chosenIsTop = chosenCard === cardTop;
+    const green = 'rgba(42,122,69,0.08)';
+    const neutral = 'var(--bg)';
+    setAppColor(
+      chosenIsTop ? green : neutral,
+      chosenIsTop ? neutral : green
+    );
     streak++;
     histCount++;
     updateCounter(false);
@@ -1036,10 +1008,13 @@ function handleTap(chosen) {
     otherCard.classList.add('correct');
     chosenYear.classList.add('year-wrong');
     otherYear.classList.add('year-correct');
-    const topIsChosen = chosen === a;
-    document.getElementById('header').classList.add(topIsChosen ? 'wrong' : 'correct');
-    document.getElementById('bottom-hint').classList.add(topIsChosen ? 'correct' : 'wrong');
-    document.body.classList.add(topIsChosen ? 'top-wrong' : 'top-correct');
+    const chosenIsTop = chosenCard === cardTop;
+    const green = 'rgba(42,122,69,0.08)';
+    const red = 'rgba(192,57,43,0.08)';
+    setAppColor(
+      chosenIsTop ? red : green,
+      chosenIsTop ? green : red
+    );
 
     savedStreak = streak;
     usedPairs.add(pairKey(a, b));
@@ -1051,10 +1026,27 @@ function handleTap(chosen) {
   }
 }
 
+function getAppSplitPercent() {
+  const app = document.getElementById('app');
+  const versus = document.getElementById('versus');
+  const appRect = app.getBoundingClientRect();
+  const versusRect = versus.getBoundingClientRect();
+  const splitY = versusRect.top + versusRect.height / 2 - appRect.top;
+  return (splitY / appRect.height * 100).toFixed(1) + '%';
+}
+
+function setAppColor(topColor, botColor) {
+  const split = getAppSplitPercent();
+  document.getElementById('app').style.background =
+    `linear-gradient(to bottom, ${topColor} ${split}, ${botColor} ${split})`;
+}
+
+function clearAppColor() {
+  document.getElementById('app').style.background = '';
+}
+
 function loadNextPair() {
-  document.getElementById('header').className = '';
-  document.getElementById('bottom-hint').className = '';
-  document.body.className = '';
+  clearAppColor();
   const pair = nextPair();
   cardTop.classList.add('card-exit-up');
   cardBottom.classList.add('card-exit-down');
