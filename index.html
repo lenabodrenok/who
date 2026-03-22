@@ -170,11 +170,17 @@
   }
 
   .card.top {
-    border-bottom: none;
+    border-bottom: 1px solid var(--divider);
   }
 
-  .card.correct, .card.wrong {
-    background: transparent !important;
+  .card.correct {
+    background: rgba(42, 122, 69, 0.08) !important;
+    transition: background 0.3s ease;
+  }
+
+  .card.wrong {
+    background: rgba(192, 57, 43, 0.08) !important;
+    transition: background 0.3s ease;
   }
 
   .card.dimmed {
@@ -232,17 +238,6 @@
 
   .person-year.year-dimmed {
     color: var(--text-hint);
-  }
-
-  #divider-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 1px;
-    background: var(--divider);
-    pointer-events: none;
-    z-index: 5;
   }
 
   #versus {
@@ -583,7 +578,6 @@
       </div>
     </div>
 
-    <div id="divider-line"></div>
     <div id="versus">vs</div>
 
     <div class="card bottom" id="card-bottom">
@@ -905,7 +899,6 @@ function showFact(person) {
   factName.textContent = getName(person).toUpperCase();
   factText.textContent = getFact(person);
   factOverlay.classList.add('visible');
-  clearAppColor();
   document.getElementById('bottom-hint').style.visibility = 'hidden';
 }
 
@@ -926,7 +919,6 @@ function showScore() {
   cardBottom.className = 'card bottom';
   yearTop.className = 'person-year';
   yearBot.className = 'person-year';
-  clearAppColor();
   cardTop.style.opacity = '0';
   cardBottom.style.opacity = '0';
 
@@ -1002,13 +994,6 @@ function handleTap(chosen) {
     otherCard.classList.add('dimmed');
     chosenYear.classList.add('year-correct');
     otherYear.classList.add('year-dimmed');
-    const chosenIsTop = chosenCard === cardTop;
-    const green = 'rgba(42,122,69,0.08)';
-    const neutral = 'var(--bg)';
-    setAppColor(
-      chosenIsTop ? green : neutral,
-      chosenIsTop ? neutral : green
-    );
     streak++;
     histCount++;
     updateCounter(false);
@@ -1021,13 +1006,6 @@ function handleTap(chosen) {
     otherCard.classList.add('correct');
     chosenYear.classList.add('year-wrong');
     otherYear.classList.add('year-correct');
-    const chosenIsTop = chosenCard === cardTop;
-    const green = 'rgba(42,122,69,0.08)';
-    const red = 'rgba(192,57,43,0.08)';
-    setAppColor(
-      chosenIsTop ? red : green,
-      chosenIsTop ? green : red
-    );
 
     savedStreak = streak;
     usedPairs.add(pairKey(a, b));
@@ -1039,30 +1017,7 @@ function handleTap(chosen) {
   }
 }
 
-function getAppSplitPercent() {
-  const app = document.getElementById('app');
-  const divider = document.getElementById('divider-line');
-  const appRect = app.getBoundingClientRect();
-  const dividerTop = parseFloat(divider.style.top) || appRect.height / 2;
-  const appOffset = document.getElementById('game').getBoundingClientRect().top - appRect.top;
-  const splitY = appOffset + dividerTop;
-  return (splitY / appRect.height * 100).toFixed(1) + '%';
-}
-
-function setAppColor(topColor, botColor) {
-  const split = getAppSplitPercent();
-  document.getElementById('app').style.background =
-    `linear-gradient(to bottom, ${topColor} ${split}, ${botColor} ${split})`;
-  document.body.style.background = topColor;
-}
-
-function clearAppColor() {
-  document.getElementById('app').style.background = '';
-  document.body.style.background = '';
-}
-
 function loadNextPair() {
-  clearAppColor();
   const pair = nextPair();
   cardTop.classList.add('card-exit-up');
   cardBottom.classList.add('card-exit-down');
@@ -1074,19 +1029,6 @@ function loadNextPair() {
 // Init
 buildDeck();
 renderPair(nextPair(), false);
-
-// Position divider line at versus element
-function updateDividerLine() {
-  const game = document.getElementById('game');
-  const versus = document.getElementById('versus');
-  const divider = document.getElementById('divider-line');
-  const gameRect = game.getBoundingClientRect();
-  const versusRect = versus.getBoundingClientRect();
-  const lineY = versusRect.top + versusRect.height / 2 - gameRect.top;
-  divider.style.top = lineY + 'px';
-}
-window.addEventListener('resize', updateDividerLine);
-setTimeout(updateDividerLine, 100);
 
 const splash = document.getElementById('splash');
 const splashSub = document.getElementById('splash-sub');
