@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #EEEDED;
+    --bg: #F5F5F7;
     --surface: #E8E7E7;
     --border: rgba(30,26,26,0.08);
     --text-primary: #1E1A1A;
@@ -173,13 +173,18 @@
   }
 
   .card.correct {
-    background: rgba(52, 199, 89, 0.08) !important;
+    background: rgba(42, 122, 69, 0.08) !important;
     transition: background 0.3s ease;
   }
 
   .card.wrong {
-    background: rgba(255, 69, 58, 0.08) !important;
+    background: rgba(192, 57, 43, 0.08) !important;
     transition: background 0.3s ease;
+  }
+
+  .card.dimmed {
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
   }
 
   .card-inner {
@@ -230,6 +235,10 @@
     color: var(--red);
   }
 
+  .person-year.year-dimmed {
+    color: var(--text-hint);
+  }
+
   /* MIDDLE DIVIDER LABEL */
   #versus {
     position: absolute;
@@ -262,7 +271,7 @@
     justify-content: center;
     align-items: center;
     padding: 40px 32px;
-    background: rgba(238, 237, 237, 0.96);
+    background: rgba(245, 245, 247, 0.96);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     opacity: 0;
@@ -385,7 +394,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(238, 237, 237, 0.96);
+    background: rgba(245, 245, 247, 0.96);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     opacity: 0;
@@ -525,7 +534,15 @@
     text-transform: uppercase;
   }
 
-  /* DISABLED STATE */
+  #header.correct, #bottom-hint.correct {
+    background: rgba(42, 122, 69, 0.08);
+    transition: background 0.3s ease;
+  }
+
+  #header.wrong, #bottom-hint.wrong {
+    background: rgba(192, 57, 43, 0.08);
+    transition: background 0.3s ease;
+  }
   .card.disabled {
     pointer-events: none;
   }
@@ -617,7 +634,36 @@ function pairInBand(a, b, level) {
 // --- STATE ---
 let usedPairs = new Set();
 let recentPersons = []; // last 15 persons seen
-const RECENT_LIMIT = 15;
+const RECENT_LIMIT = 40;
+const SEEN_LIMIT = 150;
+
+// Load seen persons from localStorage
+let seenPersons = [];
+try {
+  const saved = localStorage.getItem('whosolder_seen');
+  if (saved) seenPersons = JSON.parse(saved);
+} catch(e) { seenPersons = []; }
+
+function saveSeenPersons() {
+  try { localStorage.setItem('whosolder_seen', JSON.stringify(seenPersons)); } catch(e) {}
+}
+
+function isRecentOrSeen(name) {
+  return recentPersons.includes(name) || seenPersons.includes(name);
+}
+
+function addRecent(a, b) {
+  recentPersons.push(a.n, b.n);
+  if (recentPersons.length > RECENT_LIMIT) {
+    recentPersons = recentPersons.slice(recentPersons.length - RECENT_LIMIT);
+  }
+  // also add to seenPersons
+  seenPersons.push(a.n, b.n);
+  if (seenPersons.length > SEEN_LIMIT) {
+    seenPersons = seenPersons.slice(seenPersons.length - SEEN_LIMIT);
+  }
+  saveSeenPersons();
+}
 let streak = 0;
 let histCount = 0;
 let currentPair = null;
@@ -682,28 +728,25 @@ function buildDeck() {
   deckPos = 0;
 }
 
-function isRecent(name) {
-  return recentPersons.includes(name);
-}
-
-function addRecent(a, b) {
-  recentPersons.push(a.n, b.n);
-  if (recentPersons.length > RECENT_LIMIT) {
-    recentPersons = recentPersons.slice(recentPersons.length - RECENT_LIMIT);
-  }
-}
-
 function findPartner(person, level) {
   const len = deck.length;
-  // First pass: respect recentPersons
+  // First pass: respect recentPersons + seenPersons
   for (let offset = 0; offset < len; offset++) {
     const candidate = deck[(deckPos + offset) % len];
     if (candidate.n === person.n) continue;
-    if (isRecent(candidate.n)) continue;
+    if (isRecentOrSeen(candidate.n)) continue;
     if (usedPairs.has(pairKey(person, candidate))) continue;
     if (pairInBand(person, candidate, level)) return candidate;
   }
-  // Fallback: ignore recentPersons
+  // Fallback: ignore seen, respect only recent
+  for (let offset = 0; offset < len; offset++) {
+    const candidate = deck[(deckPos + offset) % len];
+    if (candidate.n === person.n) continue;
+    if (recentPersons.includes(candidate.n)) continue;
+    if (usedPairs.has(pairKey(person, candidate))) continue;
+    if (pairInBand(person, candidate, level)) return candidate;
+  }
+  // Final fallback: any valid pair
   for (let offset = 0; offset < len; offset++) {
     const candidate = deck[(deckPos + offset) % len];
     if (candidate.n === person.n) continue;
@@ -720,7 +763,7 @@ function getRandomPair(level) {
   for (let offset = 0; offset < len; offset++) {
     const idx = (deckPos + offset) % len;
     const person = deck[idx];
-    if (isRecent(person.n)) continue;
+    if (isRecentOrSeen(person.n)) continue;
     const partner = findPartner(person, level);
     if (partner) {
       deckPos = (idx + 1) % len;
@@ -862,6 +905,9 @@ function showFact(person) {
   factText.textContent = getFact(person);
   factOverlay.classList.add('visible');
   document.getElementById('bottom-hint').style.visibility = 'hidden';
+  document.getElementById('header').className = '';
+  document.getElementById('bottom-hint').className = '';
+  document.getElementById('bottom-hint').style.visibility = 'hidden';
 }
 
 factOverlay.addEventListener('click', () => {
@@ -881,6 +927,8 @@ function showScore() {
   cardBottom.className = 'card bottom';
   yearTop.className = 'person-year';
   yearBot.className = 'person-year';
+  document.getElementById('header').className = '';
+  document.getElementById('bottom-hint').className = '';
   cardTop.style.opacity = '0';
   cardBottom.style.opacity = '0';
 
@@ -953,9 +1001,13 @@ function handleTap(chosen) {
 
   if (chosenIsOlder) {
     chosenCard.classList.add('correct');
-    otherCard.classList.add('correct');
+    otherCard.classList.add('dimmed');
     chosenYear.classList.add('year-correct');
-    otherYear.classList.add('year-correct');
+    otherYear.classList.add('year-dimmed');
+    // header matches top card, bottom-hint matches bottom card
+    const topIsChosen = chosen === a;
+    document.getElementById('header').classList.add(topIsChosen ? 'correct' : 'dimmed');
+    document.getElementById('bottom-hint').classList.add(topIsChosen ? 'dimmed' : 'correct');
     streak++;
     histCount++;
     updateCounter(false);
@@ -968,6 +1020,9 @@ function handleTap(chosen) {
     otherCard.classList.add('correct');
     chosenYear.classList.add('year-wrong');
     otherYear.classList.add('year-correct');
+    const topIsChosen = chosen === a;
+    document.getElementById('header').classList.add(topIsChosen ? 'wrong' : 'correct');
+    document.getElementById('bottom-hint').classList.add(topIsChosen ? 'correct' : 'wrong');
 
     savedStreak = streak;
     usedPairs.add(pairKey(a, b));
@@ -980,6 +1035,8 @@ function handleTap(chosen) {
 }
 
 function loadNextPair() {
+  document.getElementById('header').className = '';
+  document.getElementById('bottom-hint').className = '';
   const pair = nextPair();
   cardTop.classList.add('card-exit-up');
   cardBottom.classList.add('card-exit-down');
