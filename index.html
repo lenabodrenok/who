@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Who's Older?</title>
 <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -52,6 +52,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 18px 24px 14px;
+    padding-top: calc(env(safe-area-inset-top) + 18px);
     flex-shrink: 0;
     position: relative;
     z-index: 10;
@@ -522,7 +523,8 @@
 
   /* BOTTOM HINT */
   #bottom-hint {
-    padding: 12px 24px 20px;
+    padding: 12px 24px;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
     text-align: center;
     flex-shrink: 0;
   }
@@ -625,6 +627,7 @@ function getDifficulty(streak) {
 
 function pairInBand(a, b, level) {
   const diff = Math.abs(a.b - b.b);
+  if (diff === 0) return false;
   const bothHist = a.hist && b.hist;
   const lo = bothHist ? HIST_THRESHOLDS[level] : MODERN_THRESHOLDS[level];
   const hi = bothHist ? HIST_UPPER[level]      : MODERN_UPPER[level];
