@@ -536,7 +536,17 @@
     text-transform: uppercase;
   }
 
-  #header.correct, #bottom-hint.correct {
+  body.top-correct {
+    background: rgba(42, 122, 69, 0.08);
+  }
+
+  body.top-wrong {
+    background: rgba(192, 57, 43, 0.08);
+  }
+
+  body.top-dimmed {
+    background: var(--bg);
+  }
     background: rgba(42, 122, 69, 0.08);
     transition: background 0.3s ease;
   }
@@ -910,6 +920,7 @@ function showFact(person) {
   document.getElementById('bottom-hint').style.visibility = 'hidden';
   document.getElementById('header').className = '';
   document.getElementById('bottom-hint').className = '';
+  document.body.className = '';
   document.getElementById('bottom-hint').style.visibility = 'hidden';
 }
 
@@ -932,6 +943,7 @@ function showScore() {
   yearBot.className = 'person-year';
   document.getElementById('header').className = '';
   document.getElementById('bottom-hint').className = '';
+  document.body.className = '';
   cardTop.style.opacity = '0';
   cardBottom.style.opacity = '0';
 
@@ -1011,6 +1023,7 @@ function handleTap(chosen) {
     const topIsChosen = chosen === a;
     document.getElementById('header').classList.add(topIsChosen ? 'correct' : 'dimmed');
     document.getElementById('bottom-hint').classList.add(topIsChosen ? 'dimmed' : 'correct');
+    document.body.classList.add(topIsChosen ? 'top-correct' : 'top-dimmed');
     streak++;
     histCount++;
     updateCounter(false);
@@ -1026,6 +1039,7 @@ function handleTap(chosen) {
     const topIsChosen = chosen === a;
     document.getElementById('header').classList.add(topIsChosen ? 'wrong' : 'correct');
     document.getElementById('bottom-hint').classList.add(topIsChosen ? 'correct' : 'wrong');
+    document.body.classList.add(topIsChosen ? 'top-wrong' : 'top-correct');
 
     savedStreak = streak;
     usedPairs.add(pairKey(a, b));
@@ -1040,6 +1054,7 @@ function handleTap(chosen) {
 function loadNextPair() {
   document.getElementById('header').className = '';
   document.getElementById('bottom-hint').className = '';
+  document.body.className = '';
   const pair = nextPair();
   cardTop.classList.add('card-exit-up');
   cardBottom.classList.add('card-exit-down');
