@@ -170,7 +170,7 @@
   }
 
   .card.top {
-    border-bottom: 1px solid var(--divider);
+    border-bottom: none;
   }
 
   .card.correct, .card.wrong {
@@ -234,7 +234,17 @@
     color: var(--text-hint);
   }
 
-  /* MIDDLE DIVIDER LABEL */
+  #divider-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--divider);
+    pointer-events: none;
+    z-index: 5;
+  }
+
   #versus {
     position: absolute;
     left: 50%;
@@ -250,6 +260,8 @@
     align-items: center;
     justify-content: center;
     font-size: 10px;
+    pointer-events: none;
+    opacity: 1 !important;
     color: var(--text-hint);
     letter-spacing: 0.05em;
     font-weight: 400;
@@ -571,6 +583,7 @@
       </div>
     </div>
 
+    <div id="divider-line"></div>
     <div id="versus">vs</div>
 
     <div class="card bottom" id="card-bottom">
@@ -1022,16 +1035,17 @@ function handleTap(chosen) {
 
     setTimeout(() => {
       showFact(chosen);
-    }, 900);
+    }, 1800);
   }
 }
 
 function getAppSplitPercent() {
   const app = document.getElementById('app');
-  const versus = document.getElementById('versus');
+  const divider = document.getElementById('divider-line');
   const appRect = app.getBoundingClientRect();
-  const versusRect = versus.getBoundingClientRect();
-  const splitY = versusRect.top + versusRect.height / 2 - appRect.top;
+  const dividerTop = parseFloat(divider.style.top) || appRect.height / 2;
+  const appOffset = document.getElementById('game').getBoundingClientRect().top - appRect.top;
+  const splitY = appOffset + dividerTop;
   return (splitY / appRect.height * 100).toFixed(1) + '%';
 }
 
@@ -1039,10 +1053,12 @@ function setAppColor(topColor, botColor) {
   const split = getAppSplitPercent();
   document.getElementById('app').style.background =
     `linear-gradient(to bottom, ${topColor} ${split}, ${botColor} ${split})`;
+  document.body.style.background = topColor;
 }
 
 function clearAppColor() {
   document.getElementById('app').style.background = '';
+  document.body.style.background = '';
 }
 
 function loadNextPair() {
@@ -1058,6 +1074,19 @@ function loadNextPair() {
 // Init
 buildDeck();
 renderPair(nextPair(), false);
+
+// Position divider line at versus element
+function updateDividerLine() {
+  const game = document.getElementById('game');
+  const versus = document.getElementById('versus');
+  const divider = document.getElementById('divider-line');
+  const gameRect = game.getBoundingClientRect();
+  const versusRect = versus.getBoundingClientRect();
+  const lineY = versusRect.top + versusRect.height / 2 - gameRect.top;
+  divider.style.top = lineY + 'px';
+}
+window.addEventListener('resize', updateDividerLine);
+setTimeout(updateDividerLine, 100);
 
 const splash = document.getElementById('splash');
 const splashSub = document.getElementById('splash-sub');
