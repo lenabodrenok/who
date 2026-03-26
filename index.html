@@ -736,17 +736,27 @@ function buildDeck() {
   deckPos = 0;
 }
 
+function getMinEraDiff(streak) {
+  const level = Math.floor(streak / 10);
+  if (level === 0) return 3;
+  if (level === 1) return 2;
+  if (level === 2) return 1;
+  return 0;
+}
+
 function findPartner(person, targetScore) {
   const len = deck.length;
+  const minEra = getMinEraDiff(streak);
   let bestCandidate = null;
   let bestDiff = Infinity;
 
-  // First pass: respect recentPersons + seenPersons
+  // First pass: respect recentPersons + seenPersons + minEraDiff
   for (let offset = 0; offset < len; offset++) {
     const candidate = deck[(deckPos + offset) % len];
     if (candidate.n === person.n) continue;
     if (isRecentOrSeen(candidate.n)) continue;
     if (usedPairs.has(pairKey(person, candidate))) continue;
+    if (Math.abs(getEra(person.b) - getEra(candidate.b)) < minEra) continue;
     const score = getPairScore(person, candidate);
     if (score === null) continue;
     const diff = Math.abs(score - targetScore);
@@ -754,13 +764,14 @@ function findPartner(person, targetScore) {
   }
   if (bestCandidate) return bestCandidate;
 
-  // Fallback: ignore seenPersons, respect recentPersons
+  // Fallback: ignore seenPersons, respect recentPersons + minEraDiff
   bestDiff = Infinity; bestCandidate = null;
   for (let offset = 0; offset < len; offset++) {
     const candidate = deck[(deckPos + offset) % len];
     if (candidate.n === person.n) continue;
     if (recentPersons.includes(candidate.n)) continue;
     if (usedPairs.has(pairKey(person, candidate))) continue;
+    if (Math.abs(getEra(person.b) - getEra(candidate.b)) < minEra) continue;
     const score = getPairScore(person, candidate);
     if (score === null) continue;
     const diff = Math.abs(score - targetScore);
@@ -768,7 +779,7 @@ function findPartner(person, targetScore) {
   }
   if (bestCandidate) return bestCandidate;
 
-  // Final fallback: any valid pair
+  // Final fallback: ignore all restrictions except diff > 0
   bestDiff = Infinity; bestCandidate = null;
   for (let offset = 0; offset < len; offset++) {
     const candidate = deck[(deckPos + offset) % len];
