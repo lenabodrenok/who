@@ -992,12 +992,14 @@ versusBtn.addEventListener('click', (e) => {
   }, 3000);
 });
 
-// Tap anywhere to dismiss clues early
+// Tap anywhere to dismiss clues early — capture phase so we can stop propagation
+// before the click reaches the card handlers
 document.addEventListener('click', (e) => {
   if (clueTop.classList.contains('visible') && e.target !== versusBtn) {
+    e.stopPropagation();
     dismissClues();
   }
-});
+}, true);
 
 function renderPair(pair, animate, silent = false) {
   const [a, b] = pair;
